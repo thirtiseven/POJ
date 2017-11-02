@@ -6,8 +6,8 @@
 #include <cmath>
 #include <iomanip>
 
-#define inf 1000000000 
-#define maxn 210
+#define inf 1000000
+#define maxn 80009
 
 int n;
 
@@ -17,7 +17,7 @@ struct node {
 }stone[maxn];
 
 double way(int i, int j) {
-	return sqrt(pow(stone[i].x - stone[j].x, 2) + pow(stone[i].x - stone[j].x, 2));
+	return sqrt(pow(stone[i].x - stone[j].x, 2) + pow(stone[i].y - stone[j].y, 2));
 }
 
 class dijkstra {
@@ -32,8 +32,9 @@ class dijkstra {
 		};
 		
 		struct edge {
-			int v, w;
-			edge(int v, int w) :v(v), w(w) { }
+			int v;
+			double w;
+			edge(int v, double w) :v(v), w(w) { }
 		};
 		
 		std::vector<edge> g[maxn];
@@ -71,19 +72,16 @@ class dijkstra {
 				if(!vis[u]) {
 					vis[u] = 1;
 					for (std::vector<edge>::iterator e = g[u].begin(); e != g[u].end(); e++) {
-						if (d[e->v] > d[u] + e->w) {
-							d[e->v] = d[u] + e->w;
+						if(d[e->v] > std::max(d[u], e->w)) {
+							d[e->v] = std::max(d[u], e->w);
 							q.push(heapnode(e->v, d[e->v]));
-						} 
+						}
 					}
 				}
 			}
-			for(int i = 1; i <= n; i++) {
-				min_cost = std::min(min_cost,d[i]);
-			}
-			return min_cost;
+			return d[2];
 		}
-	};
+};
 
 int main(int argc, char *argv[]) {  
 	int t = 0;
@@ -96,8 +94,8 @@ int main(int argc, char *argv[]) {
 		for(int i = 1; i <= n; i++) {
 			std::cin >> stone[i].x >> stone[i].y;
 		}
-		for(int i = 1; i <= n; i++) {
-			for(int j = 1; j <= n; j++) {
+		for(int i = 1; i < n; i++) {
+			for(int j = i+1; j <= n; j++) {
 				double temp_dis = way(i, j);
 				dij.addedge(i, j, temp_dis);
 				dij.addedge(j, i, temp_dis);
@@ -107,6 +105,7 @@ int main(int argc, char *argv[]) {
 		if(t) {
 			std::cout << "\n";
 		} 
+		t++;
 		std::cout << "Scenario #" << t << "\nFrog Distance = " 
 				  << std::fixed << std::setprecision(3) << ans 
 				  << "\n";  
